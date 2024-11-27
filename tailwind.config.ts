@@ -12,6 +12,9 @@ const config: Config = {
         background: "var(--background)",
         foreground: "var(--foreground)",
       },
+      animation: {
+        ticker: 'ticker 30s linear infinite',
+      },
     },
   },
   plugins: [],
