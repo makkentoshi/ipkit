@@ -1,6 +1,6 @@
 "use client";
 
-import { MapPin, Phone, Mail } from "lucide-react";
+import { Phone, Mail } from "lucide-react";
 import React from "react";
 
 const ContactSection = React.forwardRef<HTMLDivElement>((props, ref) => (
