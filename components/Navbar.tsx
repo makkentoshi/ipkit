@@ -7,18 +7,24 @@ import { useRouter } from "next/navigation";
 type NavProps = {
   contactSectionRef?: React.RefObject<HTMLDivElement>;
 };
+type HeroProps = {
+  contactSectionRef: React.RefObject<HTMLDivElement>;
+};
 
 function Navbar({ contactSectionRef }: NavProps) {
   const router = useRouter();
 
-  const handleOrderServicesClick = async (event: React.MouseEvent) => {
+  const handleOrderServicesClick = async (
+    event: React.MouseEvent,
+    { contactSectionRef }: HeroProps
+  ) => {
     event.preventDefault();
 
     await router.push("/"); // Переход на главную страницу
 
     // Переход к секции Contact без задержки
     if (contactSectionRef?.current) {
-      contactSectionRef.current.scrollIntoView({ behavior: "auto" });
+      contactSectionRef?.current.scrollIntoView({ behavior: "smooth" });
     }
   };
 
@@ -27,7 +33,7 @@ function Navbar({ contactSectionRef }: NavProps) {
     await router.push("/");
     // Переход к секции Contact без ожидания
     if (contactSectionRef?.current) {
-      contactSectionRef.current.scrollIntoView({ behavior: "auto" });
+      contactSectionRef.current.scrollIntoView({ behavior: "smooth" });
     }
   };
 
@@ -68,15 +74,6 @@ function Navbar({ contactSectionRef }: NavProps) {
               Назад
             </motion.a>
           </div>
-
-          <motion.button
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="px-6 py-2 bg-gradient-to-r from-pink-600 to-purple-600 text-white rounded-full hover:opacity-90 transition-opacity"
-            onClick={handleOrderServicesClick}
-          >
-            Заказать услуги
-          </motion.button>
         </div>
       </div>
     </nav>

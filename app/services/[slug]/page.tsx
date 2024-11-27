@@ -72,7 +72,7 @@ const ServicePage: React.FC<ServicePageProps> = ({ params }) => {
             alt={service.title}
             className="w-full h-[500px] object-cover rounded-xl shadow-2xl"
           />
-          <div className="text-white  flex justify-start h-[500px]">
+          <div className="text-white  flex justify-start h-[200px]">
             <div className="py-10  text-md flex-col">
               <div className="font-semibold">{service.title}</div>
               <div className="font-light"> {service.description}</div>

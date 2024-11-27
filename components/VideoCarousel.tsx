@@ -1,83 +1,91 @@
-import React, { useCallback } from "react";
-import { EmblaOptionsType, EmblaCarouselType } from "embla-carousel";
-import { PrevButton, NextButton, usePrevNextButtons } from "./CarouselButtons";
-import Autoplay from "embla-carousel-autoplay";
-import useEmblaCarousel from "embla-carousel-react";
+'use client';
 
-const videos = [
-  {
-    id: 1,
-    url: "/videos/tech1.mp4",
-    poster: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b",
-    title: "Digital Solutions",
-  },
-  {
-    id: 2,
-    url: "/videos/tech2.mp4",
-    poster: "https://images.unsplash.com/photo-1451187580459-43490279c0fa",
-    title: "Expert Development",
-  },
-  {
-    id: 3,
-    url: "/videos/tech3.mp4",
-    poster: "https://images.unsplash.com/photo-1518432031352-d6fc5c10da5a",
-    title: "Cloud Computing",
-  },
-];
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { videos } from '@/data/videos';
+import { VideoProgress } from './VideoProgress';
 
-type PropType = {
-  slides: number[];
-  options?: EmblaOptionsType;
-};
+export const VideoCarousel = () => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentTime, setCurrentTime] = useState(0);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
-const EmblaCarousel: React.FC<PropType> = (props) => {
-  const { slides, options } = props;
-  const [emblaRef, emblaApi] = useEmblaCarousel(options, [Autoplay()]);
-
-  const onNavButtonClick = useCallback((emblaApi: EmblaCarouselType) => {
-    const autoplay = emblaApi?.plugins()?.autoplay;
-    if (!autoplay) return;
-
-    const resetOrStop =
-      autoplay.options.stopOnInteraction === false
-        ? autoplay.reset
-        : autoplay.stop;
-
-    resetOrStop();
+  const handleNext = useCallback(() => {
+    setCurrentIndex((prev) => (prev + 1) % videos.length);
   }, []);
 
-  const {
-    prevBtnDisabled,
-    nextBtnDisabled,
-    onPrevButtonClick,
-    onNextButtonClick,
-  } = usePrevNextButtons(emblaApi, onNavButtonClick);
+  const handlePrev = useCallback(() => {
+    setCurrentIndex((prev) => (prev - 1 + videos.length) % videos.length);
+  }, []);
+
+  const handleTimeUpdate = () => {
+    if (videoRef.current) {
+      setCurrentTime(videoRef.current.currentTime);
+    }
+  };
+
+  const handleVideoEnd = () => {
+    handleNext();
+  };
+
+  const jumpToVideo = (index: number) => {
+    setCurrentIndex(index);
+  };
+
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.currentTime = 0;
+      videoRef.current.play();
+    }
+  }, [currentIndex]);
 
   return (
-    <section className="embla relative">
-      <div className="embla__viewport" ref={emblaRef}>
-        <div className="embla__container">
-          {Array.isArray(slides) &&
-            slides.map(
-              (
-                index // Check if slides is an array
-              ) => (
-                <div className="embla__slide" key={index}>
-                  <div className="embla__slide__number">{index + 1}</div>
-                </div>
-              )
-            )}
-        </div>
+    <div className="relative h-screen w-screen bg-black">
+      <video
+        ref={videoRef}
+        src={videos[currentIndex].url}
+        className="h-full w-full object-cover"
+        onTimeUpdate={handleTimeUpdate}
+        onEnded={handleVideoEnd}
+        autoPlay
+        playsInline
+      />
+
+      {/* Navigation Controls */}
+      <button
+        onClick={handlePrev}
+        className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 p-2 rounded-full hover:bg-black/70 transition-colors"
+      >
+        <ChevronLeft className="w-8 h-8 text-white" />
+      </button>
+      <button
+        onClick={handleNext}
+        className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 p-2 rounded-full hover:bg-black/70 transition-colors"
+      >
+        <ChevronRight className="w-8 h-8 text-white" />
+      </button>
+
+      {/* Progress Indicators */}
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-4">
+        {videos.map((video, index) => (
+          <VideoProgress
+            key={video.id}
+            currentTime={index === currentIndex ? currentTime : 0}
+            duration={video.duration}
+            isActive={index === currentIndex}
+            onClick={() => jumpToVideo(index)}
+          />
+        ))}
       </div>
 
-      <div className="embla__controls">
-        <div className="embla__buttons">
-          <PrevButton onClick={onPrevButtonClick} disabled={prevBtnDisabled} />
-          <NextButton onClick={onNextButtonClick} disabled={nextBtnDisabled} />
-        </div>
+      {/* Video Title */}
+      <div className="absolute top-8 left-8 bg-black/50 px-4 py-2 rounded-lg">
+        <h2 className="text-white text-lg font-medium">
+          {videos[currentIndex].title}
+        </h2>
       </div>
-    </section>
+    </div>
   );
 };
 
-export default EmblaCarousel;
+export default VideoCarousel;

@@ -125,7 +125,7 @@ export default function Home() {
       </div>
 
       {/* Video Content */}
-      <div className=" py-[330px]">
+      <div className="">
         <VideoCarousel slides={SLIDES} options={OPTIONS}></VideoCarousel>
       </div>
 
