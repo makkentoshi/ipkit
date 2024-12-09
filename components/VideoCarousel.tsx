@@ -40,11 +40,11 @@ export const VideoCarousel = () => {
   }, [currentIndex]);
 
   return (
-    <div className="relative h-screen w-screen bg-black">
+    <div className="relative h-screen w-full bg-black">
       <video
         ref={videoRef}
         src={videos[currentIndex].url}
-        className="h-full w-full object-cover"
+        className="h-full w-[100%] object-cover"
         onTimeUpdate={handleTimeUpdate}
         onEnded={handleVideoEnd}
         autoPlay
